@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Ordering.Core.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ordering.Infrastructure.Data
 {
@@ -12,11 +8,11 @@ namespace Ordering.Infrastructure.Data
     {
         public static async Task SeedAsync(OrderContext context, ILogger<OrderContextSeed> logger)
         {
-            if (!context.Orders.Any())
+            if (context is null || context.Orders is null || !context.Orders.Any())
             {
                 context.Orders.AddRange(GetOrders());
                 await context.SaveChangesAsync();
-                logger.LogInformation($"--> Ordering Database: {typeof(OrderContext).Name} seeded");
+                logger.LogInformation($"--> Ordering Database: Order seeded");
             }
         }
 

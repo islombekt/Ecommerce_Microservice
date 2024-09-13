@@ -13,8 +13,9 @@ namespace Catalog.Infrastructure.Data
     {
         public static void SeedData(IMongoCollection<Product> catalogCollection)
         {
+            try { 
             bool checkProduct = catalogCollection.Find(b => true).Any();
-            string path = Path.Combine("Data/SeedData", "products.json");
+            string path = Path.Combine("Data", "SeedData", "products.json");
             if (!checkProduct)
             {
                 var productsData = File.ReadAllText(path);
@@ -27,6 +28,8 @@ namespace Catalog.Infrastructure.Data
                     }
                 }
             }
+            }
+            catch { }
         }
     }
 }

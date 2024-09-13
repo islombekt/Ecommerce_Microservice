@@ -39,7 +39,7 @@ services:
       - "DatabaseSettings__CollectionName=Products"
       - "DatabaseSettings__BrandsCollection=Brands"
       - "DatabaseSettings__TypesCollection=Types"
-      - "ElasticConfiguration__Url=http://elasticsearch:9200" 
+      #- "ElasticConfiguration__Url=http://elasticsearch:9200" 
     depends_on:
       - catalogdb
     ports:
@@ -65,6 +65,30 @@ services:
       - discountdb
     ports:
       - "8002:8080"
+  ordering.api:
+    container_name: ordering.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings__OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=Lamborghini.97;TrustServerCertificate=True;"
+    depends_on:
+     - orderdb
+    ports:
+      - "8003:8080"
+    command: > 
+        /bin/sh -c "dotnet ef database update -p ../Ordering.Infrastructure -s ../Ordering.API && dotnet Ordering.API.dll"
+  orderdb:
+     container_name: orderdb
+     environment:
+        SA_PASSWORD: "Lamborghini.97"
+        ACCEPT_EULA: "Y"
+     restart: always
+     ports:
+       - "1433:1433"
+     healthcheck:
+       test: ["CMD-SHELL","/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Lamborghini.97' -Q 'select 1'"]
+       interval: 10s
+       timeout: 10s
+       retries: 3
   pgadmin:
     container_name: pgadmin
     environment:
@@ -86,4 +110,7 @@ services:
         - portainer_data:/data   
 
  
+
+
+
 

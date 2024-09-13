@@ -15,9 +15,9 @@ namespace Ordering.Application.Handlers
     public class CheckoutOrderCommandHandler : IRequestHandler<CheckoutOrderCommand, int>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ILogger _logger;
+        private readonly ILogger<CheckoutOrderCommandHandler> _logger;
         private readonly IMapper _mapper;
-        public CheckoutOrderCommandHandler(IOrderRepository orderRepo, ILogger logger, IMapper mapper)
+        public CheckoutOrderCommandHandler(IOrderRepository orderRepo, ILogger<CheckoutOrderCommandHandler> logger, IMapper mapper)
         {
              _orderRepository = orderRepo;
             _logger = logger;

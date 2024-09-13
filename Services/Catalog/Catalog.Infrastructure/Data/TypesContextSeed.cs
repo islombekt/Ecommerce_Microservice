@@ -13,20 +13,24 @@ namespace Catalog.Infrastructure.Data
     {
         public static void SeedData(IMongoCollection<ProductType> typeCollection)
         {
-            bool checkTypes = typeCollection.Find(b => true).Any();
-            string path = Path.Combine("Data/SeedData", "types.json");
-            if (!checkTypes)
+            try
             {
-                var typesData = File.ReadAllText(path);
-                var types = JsonSerializer.Deserialize<List<ProductType>>(typesData);
-                if (types != null)
+                bool checkTypes = typeCollection.Find(b => true).Any();
+                string path = Path.Combine("Data", "SeedData", "types.json");
+                if (!checkTypes)
                 {
-                    foreach (var item in types)
+                    var typesData = File.ReadAllText(path);
+                    var types = JsonSerializer.Deserialize<List<ProductType>>(typesData);
+                    if (types != null)
                     {
-                        typeCollection.InsertOneAsync(item);
+                        foreach (var item in types)
+                        {
+                            typeCollection.InsertOneAsync(item);
+                        }
                     }
                 }
             }
+            catch (Exception ex) { }
         }
     }
 }

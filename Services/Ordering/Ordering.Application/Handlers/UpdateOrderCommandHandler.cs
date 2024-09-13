@@ -17,8 +17,8 @@ namespace Ordering.Application.Handlers
     {
         private readonly IOrderRepository _orderRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        public UpdateOrderCommandHandler(IOrderRepository orderRepository, IMapper mapper, ILogger logger)
+        private readonly ILogger<UpdateOrderCommandHandler> _logger;
+        public UpdateOrderCommandHandler(IOrderRepository orderRepository, IMapper mapper, ILogger<UpdateOrderCommandHandler> logger)
         {
             _orderRepo = orderRepository;
             _logger = logger;
