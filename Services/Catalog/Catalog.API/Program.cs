@@ -4,9 +4,16 @@ using Catalog.Infrastructure.Repositories;
 using System.Reflection;
 using MediatR;
 using Catalog.Application.Handlers;
+using Serilog;
+using Common.Logging;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
+// serilog configuration
+
+builder.Host.UseSerilog(Logging.cfg);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

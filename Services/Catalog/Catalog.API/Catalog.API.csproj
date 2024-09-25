@@ -7,6 +7,15 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
     <DockerComposeProjectPath>..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
+
+	  <!-- Disable retrieving the repository information -->
+	  <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+
+	  <!-- Disable source link (if it's being used) -->
+	  <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+
+	  <!-- Optional: Disable Git metadata in generated assemblies -->
+	  <EmbedUntrackedSources>false</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Infrastructure\Common.Logging\Common.Logging.csproj" />
     <ProjectReference Include="..\Catalog.Application\Catalog.Application.csproj" />
     <ProjectReference Include="..\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
   </ItemGroup>

@@ -12,9 +12,11 @@ namespace Catalog.API.Controllers
     public class CatalogController : ApiController
     {
         private readonly IMediator _mediator;
-        public CatalogController(IMediator mediator)
+        private readonly ILogger _logger;   
+        public CatalogController(IMediator mediator, ILogger logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
         [HttpGet("GetProductById/{productId}")]
         public async Task<IActionResult> GetProductById (string productId)
@@ -28,6 +30,7 @@ namespace Catalog.API.Controllers
         {
             var query = new GetProductByNameQuery(name);
             var result = await _mediator.Send(query);
+            _logger.LogInformation($"Product with {name} fetched");
             return Ok(result);
         }
         [HttpGet("GetProductByBrand/{brand}")]

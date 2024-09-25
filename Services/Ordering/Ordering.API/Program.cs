@@ -1,9 +1,17 @@
+using Common.Logging;
+using EventBus.Messages.Common;
+using MassTransit;
+using Ordering.API.EventBusConsumer;
 using Ordering.API.Extensions;
 using Ordering.Application.Extensions;
 using Ordering.Infrastructure.Data;
 using Ordering.Infrastructure.Extension;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Host.UseSerilog(Logging.cfg);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -23,7 +31,9 @@ builder.Services.AddApplicationServices();
 // add Infratstructure services 
 builder.Services.AddInfraServices(builder.Configuration);
 
-
+//consumer class
+builder.Services.AddScoped<BasketOrderingConsumer>();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
 
@@ -31,6 +41,23 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+
+// mass transit
+builder.Services.AddMassTransit(cnf =>
+{
+    // mark this as consumer
+    cnf.AddConsumer<BasketOrderingConsumer>();
+    cnf.UsingRabbitMq((ctx,cofg) =>
+    {
+        cofg.Host(builder.Configuration["EventBusSettings:HostAddress"]);
+        cofg.ReceiveEndpoint(EventBusConstant.BasketCheckoutQueue, c => 
+        {  
+            c.ConfigureConsumer<BasketOrderingConsumer>(ctx);
+        });
+    });
+});
+
+builder.Services.AddMassTransitHostedService();
 var app = builder.Build();
 // Apply db migration
 app.MigrateDatabase<OrderContext>((context, services) =>

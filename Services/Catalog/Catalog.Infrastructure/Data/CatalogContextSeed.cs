@@ -15,7 +15,7 @@ namespace Catalog.Infrastructure.Data
         {
             try { 
             bool checkProduct = catalogCollection.Find(b => true).Any();
-            string path = Path.Combine("Data", "SeedData", "products.json");
+            string path = Path.Combine("..", "app", "Data", "SeedData", "products.json");
             if (!checkProduct)
             {
                 var productsData = File.ReadAllText(path);

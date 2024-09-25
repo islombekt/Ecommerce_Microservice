@@ -11,7 +11,7 @@ public static class BrandContextSeed
         try
         {
             bool checkBrands = brandCollection.Find(b => true).Any();
-            string path = Path.Combine("Data","SeedData", "brands.json");//string path = Path.Combine("..","Catalog.Infrastructure","Data", "SeedData", "brands.json");
+            string path = Path.Combine("..","app",  "Data","SeedData", "brands.json");//string path = Path.Combine("..","Catalog.Infrastructure","Data", "SeedData", "brands.json");
             if (!checkBrands)
             {
                 var brandsData = File.ReadAllText(path);
