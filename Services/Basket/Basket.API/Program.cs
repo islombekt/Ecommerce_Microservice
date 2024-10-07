@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Basket.Application.GrpcService;
 using Basket.Application.Handlers;
 using Basket.Core.Repositories;
@@ -6,6 +7,7 @@ using Common.Logging;
 using Discount.Grpc.Protos;
 using MassTransit;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,13 +22,38 @@ builder.Services.AddApiVersioning(opt =>
 {
     opt.ReportApiVersions = true;
     opt.AssumeDefaultVersionWhenUnspecified = true;
-    opt.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    opt.DefaultApiVersion = new ApiVersion(1, 0);
+})
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
 
 builder.Services.AddSwaggerGen(c =>
 {
 
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Basket.API", Version = "v1" });
+    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Basket.API", Version = "v2" });
+    // include 
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmpPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmpPath))
+    {
+        c.IncludeXmlComments(xmpPath);
+    }
+
+    // configure swagger to use versioning
+    c.DocInclusionPredicate((version, apiDesciption) =>
+    {
+        if (!apiDesciption.TryGetMethodInfo(out var methodInfo))
+        {
+            return false;
+        }
+        var versions = methodInfo.DeclaringType?.GetCustomAttributes(true).OfType<ApiVersionAttribute>().SelectMany(attr => attr.Versions);
+        return versions?.Any(v => $"v{v.ToString()}" == version) ?? false;
+    });
 });
 
 // register services
@@ -76,7 +103,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Basket.API V1");
+        c.SwaggerEndpoint("/swagger/v2/swagger.json", "Basket.API V2");
+    });
 }
 
 app.UseAuthorization();

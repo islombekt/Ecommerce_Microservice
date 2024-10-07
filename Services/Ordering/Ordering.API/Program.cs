@@ -33,6 +33,7 @@ builder.Services.AddInfraServices(builder.Configuration);
 
 //consumer class
 builder.Services.AddScoped<BasketOrderingConsumer>();
+builder.Services.AddScoped<BasketOrderingConsumerV2>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -47,12 +48,19 @@ builder.Services.AddMassTransit(cnf =>
 {
     // mark this as consumer
     cnf.AddConsumer<BasketOrderingConsumer>();
+    cnf.AddConsumer<BasketOrderingConsumerV2>();
     cnf.UsingRabbitMq((ctx,cofg) =>
     {
         cofg.Host(builder.Configuration["EventBusSettings:HostAddress"]);
         cofg.ReceiveEndpoint(EventBusConstant.BasketCheckoutQueue, c => 
         {  
             c.ConfigureConsumer<BasketOrderingConsumer>(ctx);
+        });
+
+        // V2 version
+        cofg.ReceiveEndpoint(EventBusConstant.BasketCheckoutQueueV2, c =>
+        {
+            c.ConfigureConsumer<BasketOrderingConsumerV2>(ctx);
         });
     });
 });

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Exceptions;
@@ -25,7 +26,23 @@ namespace Common.Logging
                 loggerConf.MinimumLevel.Override("Basket", Serilog.Events.LogEventLevel.Debug);
                 loggerConf.MinimumLevel.Override("Discount", Serilog.Events.LogEventLevel.Debug);
                 loggerConf.MinimumLevel.Override("Ordering", Serilog.Events.LogEventLevel.Debug);
-            }  
+            }
+
+
+            // setting up elasticsearch
+            var elasticUrl = context.Configuration.GetValue<string>("ElasticConfiguration:Uri");
+            if (elasticUrl != null) 
+            {
+                loggerConf.WriteTo.Elasticsearch(
+                    new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(new Uri(elasticUrl))
+                    { 
+                     
+                        AutoRegisterTemplate = true,
+                        AutoRegisterTemplateVersion = Serilog.Sinks.Elasticsearch.AutoRegisterTemplateVersion.ESv8,
+                        IndexFormat = "ecommerce-logs-{0:dd.MM.yyyy}",
+                        MinimumLogEventLevel = Serilog.Events.LogEventLevel.Debug,
+                    });
+            }
         };
     }
 }

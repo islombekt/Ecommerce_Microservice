@@ -8,10 +8,12 @@ using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Basket.API.Controllers
+namespace Basket.API.Controllers.V2
 {
-    [ApiVersion("1")]
-    public class BasketController : ApiController
+    [ApiVersion("2")]
+    [ApiController]
+    [Route("api/v2/[controller]")]
+    public class BasketController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IPublishEndpoint _publish;
@@ -23,36 +25,14 @@ namespace Basket.API.Controllers
             _publish = publish;
             _mediator = mediator;
         }
-        [HttpGet("GetBasketByName/{userName}")]
-        public async Task<IActionResult> GetProductById(string userName)
-        {
-            var query = new GetBasketByUserNameQuery(userName);
-            var result = await _mediator.Send(query);
-            return Ok(result);
-        }
-        [HttpPost("CreateBasket")]
-        public async Task<IActionResult> CreateBasket([FromBody] CreateShoppingCartCommand createShoppingCartCommand)
-        {
-
-            var result = await _mediator.Send(createShoppingCartCommand);
-            return Ok(result);
-        }
-        [HttpDelete]
-        public async Task<IActionResult> DeleteBasket(string userName)
-        {
-            var query = new DeleteShoppingCartByUserNameCommand(userName);
-            var result = await _mediator.Send(query);
-            return Ok(result);
-        }
-
         [HttpPost("[action]")]
-        public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout)
+        public async Task<IActionResult> Checkout([FromBody] BasketCheckoutV2 basketCheckout)
         {
             // get the existing basket with username
             var query = new GetBasketByUserNameQuery(basketCheckout.UserName);
             var basket = await _mediator.Send(query);
             if (basket == null) { return BadRequest(); }
-            var eventMsg = BasketMapper.Mapper.Map<BasketCheckoutEvent>(basketCheckout);
+            var eventMsg = BasketMapper.Mapper.Map<BasketCheckoutEventV2>(basketCheckout);
             eventMsg.TotalPrice = basket.TotalPrice;
             try
             {

@@ -12,8 +12,8 @@ namespace Catalog.API.Controllers
     public class CatalogController : ApiController
     {
         private readonly IMediator _mediator;
-        private readonly ILogger _logger;   
-        public CatalogController(IMediator mediator, ILogger logger)
+        private readonly ILogger<CatalogController> _logger;   
+        public CatalogController(IMediator mediator, ILogger<CatalogController> logger)
         {
             _mediator = mediator;
             _logger = logger;
@@ -49,7 +49,7 @@ namespace Catalog.API.Controllers
             {
                 var query = new GetAllProductQuery(catalogSpecParams);
                 var result = await _mediator.Send(query);
-               // _logger.LogInformation("All products retrieved");
+                _logger.LogInformation("All products retrieved",result);
                 return Ok(result);
             }
             catch (Exception e)
