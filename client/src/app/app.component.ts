@@ -1,27 +1,22 @@
-import { Component,OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from "./navbar/navbar.component";
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-
+import { Component, OnInit } from '@angular/core';
+import { AcntService } from './account/acnt.service';
+import { BasketService } from './basket/basket.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, NavbarComponent,HttpClientModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit
-{
+export class AppComponent implements OnInit {
   title = 'eShopping';
-  constructor(private http:HttpClient){}
-  ngOnInit():void{
-   this.http.get('http://localhost:9010/Catalog/GetProductsByBrandName/Adidas').subscribe({
-    next:response => console.log(response),
-    error: error => console.log(error),
-    complete:() => {
-      console.log("Event catalog API call completed");
+
+  constructor(private basketService: BasketService, private acntService: AcntService){}
+  ngOnInit(): void {
+
+    const basket_username = localStorage.getItem('basket_username');
+    if(basket_username){
+      this.basketService.getBasket(basket_username);
     }
-   })
   }
+
 }

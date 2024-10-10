@@ -2,15 +2,12 @@
 using Catalog.Application.Queries;
 using Catalog.Application.Responses;
 using Catalog.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MediatR;
+
 
 namespace Catalog.Application.Handlers
 {
-    public class GetProductByBrandQueryHandler : IReqestHandler<GetProductByBrandQuery, IList<ProductResponse>>
+    public class GetProductByBrandQueryHandler : IRequestHandler<GetProductByBrandQuery, IList<ProductResponse>>
     {
         private readonly IProductRepository _prod;
         public GetProductByBrandQueryHandler(IProductRepository prod) { _prod = prod; }
